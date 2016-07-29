@@ -82,7 +82,6 @@ class AnagramsFrame extends Component {
   render() {
     return (
         <form>
-          <h2>Finn anagrammer</h2>
           <input type="text" value={this.state.anagram} onChange={this.handleAnagram}/>
           <button type="submit" onClick={this.handleAnagramClick}>
             Søk
@@ -96,7 +95,7 @@ class AnagramsResultFrame extends Component {
   render() {
     return (
       <div>
-      <p>Denne strengen har {this.props.specAnagrams.length} anagrammer.</p>
+      <p>Denne strengen har {this.props.specAnagrams.length} anagrammer:</p>
       <ul>
         {this.props.specAnagrams.map(function(word) {
           return <p>{word}</p>;
@@ -114,7 +113,35 @@ class App extends Component {
       wordlist: data.words,
       searchWord: "",
       anagrams: {},
-      specificAnagrams: ["lev", "vel", "elv"],
+      specificAnagrams: [],
+      scrabbleValues: {
+                        a: 1,
+                        b: 4,
+                        c: 10,
+                        d: 1,
+                        e: 1,
+                        f: 2,
+                        g: 2,
+                        h: 3,
+                        i: 1,
+                        j: 4,
+                        k: 2,
+                        l: 1,
+                        m: 2,
+                        n: 1,
+                        o: 2,
+                        p: 4,
+                        r: 1,
+                        s: 1,
+                        t: 1,
+                        u: 4,
+                        v: 4,
+                        w: 8,
+                        y: 6,
+                        æ: 6,
+                        ø: 5,
+                        å: 4
+      },
       test: false
     };
   }
@@ -171,12 +198,17 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h2>NSFs ordliste</h2>
         </div>
-          <h1>Søk i ordlisten</h1>
-          <SearchFrame wordlist={this.state.wordlist}
-                      onHandleClick={this.handleClick} />
-          <SearchResultFrame test={this.state.test} searchWord={this.state.searchWord} />
-          <AnagramsFrame serveAnagrams={this.serveAnagrams} />
-          <AnagramsResultFrame specAnagrams={this.state.specificAnagrams} />
+          <div className="Search">
+            <h1>Søk i ordlisten</h1>
+            <SearchFrame wordlist={this.state.wordlist}
+                         onHandleClick={this.handleClick} />
+            <SearchResultFrame test={this.state.test} searchWord={this.state.searchWord} />
+          </div>
+          <div className="Anagram">
+            <h1>Finn anagrammer</h1>
+            <AnagramsFrame serveAnagrams={this.serveAnagrams} />
+            <AnagramsResultFrame specAnagrams={this.state.specificAnagrams} />
+          </div>
       </div>
     );
   }
