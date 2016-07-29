@@ -22,3 +22,14 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+.Search {
+  float: left;
+  padding: 20px;
+}
+
+.Anagram {
+  border-left: thick solid #222;
+  float: left;
+  padding: 20px;
+}
