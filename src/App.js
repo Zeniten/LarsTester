@@ -106,6 +106,33 @@ class AnagramsResultFrame extends Component {
   }
 }
 
+class MostValuableWords extends Component {
+  render() {
+    return (
+      <div>
+        <table>
+          <thead>
+            <tr>
+              <th>Word</th>
+              <th>Word Score</th>
+            </tr>
+          </thead>
+          <tbody>
+          {this.props.mostValuableWords.map(function(item) {
+            return (
+              <tr>
+                <td>{item[0]}</td>
+                <td>{item[1]}</td>
+              </tr>
+            );
+          })}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+}
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -114,33 +141,37 @@ class App extends Component {
       searchWord: "",
       anagrams: {},
       specificAnagrams: [],
-      scrabbleValues: {
-                        a: 1,
-                        b: 4,
-                        c: 10,
-                        d: 1,
-                        e: 1,
-                        f: 2,
-                        g: 2,
-                        h: 3,
-                        i: 1,
-                        j: 4,
-                        k: 2,
-                        l: 1,
-                        m: 2,
-                        n: 1,
-                        o: 2,
-                        p: 4,
-                        r: 1,
-                        s: 1,
-                        t: 1,
-                        u: 4,
-                        v: 4,
-                        w: 8,
-                        y: 6,
-                        æ: 6,
-                        ø: 5,
-                        å: 4
+      mostValuableWords: [],
+      tiles: {
+                        "A": { "number": 7, "value": 1 },
+                        "B": { "number": 3, "value": 4 },
+                        "C": { "number": 1, "value": 10 },
+                        "D": { "number": 5, "value": 1 },
+                        "E": { "number": 9, "value": 1 },
+                        "F": { "number": 4, "value": 2 },
+                        "G": { "number": 4, "value": 2 },
+                        "H": { "number": 3, "value": 3 },
+                        "I": { "number": 5, "value": 1 },
+                        "J": { "number": 2, "value": 4 },
+                        "K": { "number": 4, "value": 2 },
+                        "L": { "number": 5, "value": 1 },
+                        "M": { "number": 3, "value": 2 },
+                        "N": { "number": 6, "value": 1 },
+                        "O": { "number": 4, "value": 2 },
+                        "P": { "number": 2, "value": 4 },
+                        "Q": { "number": 0, "value": 0 },
+                        "R": { "number": 6, "value": 1 },
+                        "S": { "number": 6, "value": 1 },
+                        "T": { "number": 6, "value": 1 },
+                        "U": { "number": 3, "value": 4 },
+                        "V": { "number": 3, "value": 4 },
+                        "W": { "number": 1, "value": 8 },
+                        "X": { "number": 0, "value": 0 },
+                        "Y": { "number": 1, "value": 6 },
+                        "Z": { "number": 0, "value": 0 },
+                        "Æ": { "number": 1, "value": 6 },
+                        "Ø": { "number": 2, "value": 5 },
+                        "Å": { "number": 2, "value": 4 }
       },
       test: false
     };
@@ -165,7 +196,7 @@ class App extends Component {
     if (str in anagrams) {
       this.setState({ specificAnagrams: anagrams[str] });
     } else {
-      this.setState({ specificAnagrams: ["laaars"] });
+      this.setState({ specificAnagrams: [] });
     }
   }
 
@@ -187,8 +218,71 @@ class App extends Component {
     this.setState({ anagrams: agrms });
   }
 
+  computeMostValuableWord = (wordLength) => {
+    var wordlist = this.state.wordlist, tiles = this.state.tiles;
+    var word = "", wordScore = 0, tempWordScore = 0, wordArray;
+
+    for (var i = 0; i < wordlist.length; i++) {
+      if (wordlist[i].length === wordLength) {
+        wordArray = wordlist[i].split("");
+        if (this.letterCounter(wordArray)) { // Use this test for valid Scrabble words.
+          for (var j = 0; j < wordArray.length; j++) {
+            try {
+              tempWordScore += tiles[wordArray[j]].value;
+            } catch(e) {
+              // console.log(e);
+              // console.log("wordArray: " + wordArray);
+              // console.log("wordArray[j] :" + j);
+            }
+          }
+          if (tempWordScore > wordScore) {
+            word = wordlist[i];
+            wordScore = tempWordScore;
+          }
+        }
+      }
+      tempWordScore = 0;
+    }
+
+    return [word, wordScore];
+  }
+
+  letterCounter = (wordArray) => {
+    var tiles = this.state.tiles;
+    var letter = wordArray[0], counter = 1;
+
+    for (var i = 1; i < wordArray.length; i++) {
+      if (letter === wordArray[i]) {
+        counter += 1;
+        try {
+          if (counter > tiles[letter].number) {
+            return false;
+          }
+        } catch(e) {
+          console.log(e);
+          console.log(letter);
+        }
+      } else {
+        counter = 1;
+      }
+      letter = wordArray[i];
+    }
+    return true;
+  }
+
+  computeMostValuableWords = () => {
+    var mostValuableWords = [];
+
+    for (var i = 1; i < 16; i++) {
+      mostValuableWords.push(this.computeMostValuableWord(i));
+    }
+
+    this.setState({ mostValuableWords: mostValuableWords });
+  }
+
   componentWillMount() {
     this.findAnagrams();
+    this.computeMostValuableWords();
   }
 
   render() {
@@ -208,6 +302,9 @@ class App extends Component {
             <h1>Finn anagrammer</h1>
             <AnagramsFrame serveAnagrams={this.serveAnagrams} />
             <AnagramsResultFrame specAnagrams={this.state.specificAnagrams} />
+          </div>
+          <div className="MostValuableWords">
+            <MostValuableWords mostValuableWords={this.state.mostValuableWords} />
           </div>
       </div>
     );
