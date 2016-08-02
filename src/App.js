@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import data from './nsf-wordlist.json';
+import { ineffectiveLevenshtein } from './levenshtein.js';
 
 class SearchFrame extends Component {
   constructor(props) {
@@ -283,6 +284,7 @@ class App extends Component {
   componentWillMount() {
     this.findAnagrams();
     this.computeMostValuableWords();
+    console.log(ineffectiveLevenshtein("kitten", "sitting"));
   }
 
   render() {
@@ -305,6 +307,10 @@ class App extends Component {
           </div>
           <div className="MostValuableWords">
             <MostValuableWords mostValuableWords={this.state.mostValuableWords} />
+          </div>
+          <div>
+            <h1>Testområde</h1>
+            {ineffectiveLevenshtein("", "sitting")}
           </div>
       </div>
     );
